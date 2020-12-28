@@ -1,0 +1,25 @@
+{
+    "name": "byivo/vending-machine",
+    "description": "",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ByIvo",
+            "email": "irbatistela@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "VendingMachine\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\VendingMachine\\": "test/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    }
+}
