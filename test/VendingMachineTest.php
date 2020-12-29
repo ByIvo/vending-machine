@@ -152,4 +152,22 @@ class VendingMachineTest extends TestCase {
 		$vendingMachineOutput = $vendingMachine->buy('coke');
 		Assert::assertEquals([new Nickle(), new Penny(), new Penny()], $vendingMachineOutput->changes());
 	}
+
+	/** @test */
+	public function shouldAllowCustomerToRequestARefundBeforeBuyingAProduct(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Quarter());
+
+		Assert::assertEquals([new Quarter(), new Quarter()], $vendingMachine->giveUpOnBuying());
+		Assert::assertEquals(0, $vendingMachine->depositedAmount());
+
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Penny());
+		$vendingMachine->putCoinInto(new Penny());
+		$vendingMachine->putCoinInto(new Nickle());
+
+		Assert::assertEquals([new Quarter(), new Penny(), new Penny(), new Nickle()], $vendingMachine->giveUpOnBuying());
+		Assert::assertEquals(0, $vendingMachine->depositedAmount());
+	}
 }

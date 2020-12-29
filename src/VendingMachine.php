@@ -24,6 +24,13 @@ class VendingMachine {
 		$this->depositedCoins[] = $coin;
 	}
 
+	public function giveUpOnBuying(): array {
+		$depositedCoins = $this->depositedCoins;
+		$this->clearDepositedCoins();
+
+		return $depositedCoins;
+	}
+
 	public function depositedAmount(): float {
 		return array_reduce($this->depositedCoins, function (float $sum, Coin $currentCoin) {
 			return $sum + $currentCoin->inCents();
