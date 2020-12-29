@@ -3,14 +3,12 @@
 namespace VendingMachine;
 
 use VendingMachine\Coin\Coin;
+use VendingMachine\Product\Coke;
+use VendingMachine\Product\Pepsi;
+use VendingMachine\Product\Product;
+use VendingMachine\Product\Soda;
 
 class VendingMachine {
-
-	private const PRICE_OF_PRODUCTS = [
-		'coke' => .25,
-		'pepsi' => .35,
-		'soda' => .45,
-	];
 
 	private $depositedCoins = [];
 
@@ -24,7 +22,9 @@ class VendingMachine {
 		}, $sumInit = .0);
 	}
 
-	public function buy(string $product): VendingMachineOutput {
+	public function buy(string $productCode): VendingMachineOutput {
+		$product = $this->getProductFromStashByCode($productCode);
+
 		if (!$this->hasEnoughMoneyToBuyProduct($product)) {
 			throw new NotEnoughMoneyIntoTheMachine();
 		}
@@ -32,7 +32,23 @@ class VendingMachine {
 		return new VendingMachineOutput($product, $changes = []);
 	}
 
-	private function hasEnoughMoneyToBuyProduct(string $product): bool {
-		return $this->depositedAmount() >= self::PRICE_OF_PRODUCTS[ $product ];
+	private function getProductFromStashByCode(string $productCode): Product {
+		$foundProducts = array_filter($this->availableProducts(), function (Product $product) use ($productCode) {
+			return $product->code() === $productCode;
+		});
+
+		return  array_shift($foundProducts);
+	}
+
+	private function availableProducts(): array {
+		return [
+			new Coke(),
+			new Pepsi(),
+			new Soda(),
+		];
+	}
+
+	private function hasEnoughMoneyToBuyProduct(Product $product): bool {
+		return $this->depositedAmount() >= $product->price();
 	}
 }

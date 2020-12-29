@@ -10,6 +10,9 @@ use VendingMachine\Coin\Nickle;
 use VendingMachine\Coin\Penny;
 use VendingMachine\Coin\Quarter;
 use VendingMachine\NotEnoughMoneyIntoTheMachine;
+use VendingMachine\Product\Coke;
+use VendingMachine\Product\Pepsi;
+use VendingMachine\Product\Soda;
 use VendingMachine\VendingMachine;
 
 class VendingMachineTest extends TestCase {
@@ -53,7 +56,7 @@ class VendingMachineTest extends TestCase {
 
 		$vendingMachineOutput = $vendingMachine->buy('coke');
 
-		Assert::assertEquals('coke', $vendingMachineOutput->product());
+		Assert::assertEquals(new Coke(), $vendingMachineOutput->product());
 		Assert::assertEmpty($vendingMachineOutput->changes());
 	}
 
@@ -65,7 +68,7 @@ class VendingMachineTest extends TestCase {
 
 		$vendingMachineOutput = $vendingMachine->buy('pepsi');
 
-		Assert::assertEquals('pepsi', $vendingMachineOutput->product());
+		Assert::assertEquals(new Pepsi(), $vendingMachineOutput->product());
 		Assert::assertEmpty($vendingMachineOutput->changes());
 	}
 
@@ -80,7 +83,7 @@ class VendingMachineTest extends TestCase {
 
 		$vendingMachineOutput = $vendingMachine->buy('soda');
 
-		Assert::assertEquals('soda', $vendingMachineOutput->product());
+		Assert::assertEquals(new Soda(), $vendingMachineOutput->product());
 		Assert::assertEmpty($vendingMachineOutput->changes());
 	}
 
