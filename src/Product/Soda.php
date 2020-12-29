@@ -4,10 +4,6 @@ namespace VendingMachine\Product;
 
 class Soda implements Product {
 
-	public function price(): float {
-		return 0.45;
-	}
-
 	public function priceInCents(): int {
 		return 45;
 	}
