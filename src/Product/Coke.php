@@ -8,6 +8,10 @@ class Coke implements Product {
 		return 0.25;
 	}
 
+	public function priceInCents(): int {
+		return 25;
+	}
+
 	public function code(): string {
 		return 'coke';
 	}

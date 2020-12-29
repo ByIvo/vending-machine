@@ -49,6 +49,6 @@ class VendingMachine {
 	}
 
 	private function hasEnoughMoneyToBuyProduct(Product $product): bool {
-		return $this->depositedAmount() >= $product->price();
+		return ($this->depositedAmount() * 100) >= $product->priceInCents();
 	}
 }

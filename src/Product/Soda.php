@@ -8,6 +8,10 @@ class Soda implements Product {
 		return 0.45;
 	}
 
+	public function priceInCents(): int {
+		return 45;
+	}
+
 	public function code(): string {
 		return 'soda';
 	}

@@ -8,6 +8,10 @@ class Pepsi implements Product {
 		return 0.35;
 	}
 
+	public function priceInCents(): int {
+		return 35;
+	}
+
 	public function code(): string {
 		return 'pepsi';
 	}
