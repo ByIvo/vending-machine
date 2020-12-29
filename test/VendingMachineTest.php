@@ -124,4 +124,32 @@ class VendingMachineTest extends TestCase {
 		$this->expectExceptionMessage('There is not enough money to buy it');
 		$vendingMachine->buy('soda');
 	}
+
+	/** @test */
+	public function shouldClearDepositedAmountAfterBuyingSomeProduct(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->buy('coke');
+
+		$this->expectException(NotEnoughMoneyIntoTheMachine::class);
+		$vendingMachine->buy('coke');
+	}
+
+	/** @test */
+	public function shouldOutputTheProductWithChanges_WhenAmountOverflowTheProductPrice(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Quarter());
+
+		$vendingMachineOutput = $vendingMachine->buy('soda');
+		Assert::assertEquals([new Nickle()], $vendingMachineOutput->changes());
+
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Penny());
+		$vendingMachine->putCoinInto(new Penny());
+		$vendingMachine->putCoinInto(new Nickle());
+
+		$vendingMachineOutput = $vendingMachine->buy('coke');
+		Assert::assertEquals([new Nickle(), new Penny(), new Penny()], $vendingMachineOutput->changes());
+	}
 }
