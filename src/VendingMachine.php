@@ -18,7 +18,7 @@ class VendingMachine {
 
 	public function depositedAmount(): float {
 		return array_reduce($this->depositedCoins, function (float $sum, Coin $currentCoin) {
-			return $sum + $currentCoin->valueOf();
+			return $sum + $currentCoin->inCents();
 		}, $sumInit = .0);
 	}
 
@@ -49,6 +49,6 @@ class VendingMachine {
 	}
 
 	private function hasEnoughMoneyToBuyProduct(Product $product): bool {
-		return ($this->depositedAmount() * 100) >= $product->priceInCents();
+		return $this->depositedAmount() >= $product->priceInCents();
 	}
 }

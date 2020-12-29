@@ -18,21 +18,21 @@ use VendingMachine\VendingMachine;
 class VendingMachineTest extends TestCase {
 
 	public function provideAcceptableCoins(): iterable {
-		yield 'penny' => [new Penny(), 0.01];
-		yield 'nickle' => [new Nickle(), 0.05];
-		yield 'dime' => [new Dime(), 0.10];
-		yield 'quarter' => [new Quarter(), 0.25];
+		yield 'penny' => [new Penny(), 1];
+		yield 'nickle' => [new Nickle(), 5];
+		yield 'dime' => [new Dime(), 10];
+		yield 'quarter' => [new Quarter(), 25];
 	}
 
 	/**
 	 * @test @dataProvider provideAcceptableCoins
 	 */
-	public function shouldAcceptCoins(Coin $coin, float $expectedValue): void {
+	public function shouldAcceptCoins(Coin $coin, float $expectedCents): void {
 		$vendingMachine = new VendingMachine();
 
 		$vendingMachine->putCoinInto($coin);
 
-		Assert::assertEquals($expectedValue, $vendingMachine->depositedAmount());
+		Assert::assertEquals($expectedCents, $vendingMachine->depositedAmount());
 	}
 
 	/** @test */
@@ -40,13 +40,13 @@ class VendingMachineTest extends TestCase {
 		$vendingMachine = new VendingMachine();
 
 		$vendingMachine->putCoinInto(new Nickle());
-		Assert::assertEquals(.05, $vendingMachine->depositedAmount());
+		Assert::assertEquals(5, $vendingMachine->depositedAmount());
 
 		$vendingMachine->putCoinInto(new Quarter());
-		Assert::assertEquals(.30, $vendingMachine->depositedAmount());
+		Assert::assertEquals(30, $vendingMachine->depositedAmount());
 
 		$vendingMachine->putCoinInto(new Penny());
-		Assert::assertEquals(.31, $vendingMachine->depositedAmount());
+		Assert::assertEquals(31, $vendingMachine->depositedAmount());
 	}
 
 	/** @test */

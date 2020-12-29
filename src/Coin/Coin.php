@@ -4,10 +4,7 @@ namespace VendingMachine\Coin;
 
 interface Coin {
 
-	public const PENNY = 0.01;
-	public const NICKEL = 0.05;
-	public const DIME = 0.10;
-	public const QUARTER = 0.25;
-
+	/** @deprecated  */
 	public function valueOf(): float;
+	public function inCents(): int;
 }
