@@ -8,7 +8,7 @@ class VendingMachine {
 
 	private $depositedCoins;
 
-	public function depositCoin(Coin $coin): void {
+	public function putCoinInto(Coin $coin): void {
 		$this->depositedCoins[] = $coin;
 	}
 

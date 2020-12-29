@@ -26,7 +26,7 @@ class VendingMachineTest extends TestCase {
 	public function shouldAcceptCoins(Coin $coin, float $expectedValue): void {
 		$vendingMachine = new VendingMachine();
 
-		$vendingMachine->depositCoin($coin);
+		$vendingMachine->putCoinInto($coin);
 
 		Assert::assertEquals($expectedValue, $vendingMachine->depositedAmount());
 	}
@@ -35,13 +35,13 @@ class VendingMachineTest extends TestCase {
 	public function shouldAccumulateDepositedCoins(): void {
 		$vendingMachine = new VendingMachine();
 
-		$vendingMachine->depositCoin(new Nickle());
+		$vendingMachine->putCoinInto(new Nickle());
 		Assert::assertEquals(.05, $vendingMachine->depositedAmount());
 
-		$vendingMachine->depositCoin(new Quarter());
+		$vendingMachine->putCoinInto(new Quarter());
 		Assert::assertEquals(.30, $vendingMachine->depositedAmount());
 
-		$vendingMachine->depositCoin(new Penny());
+		$vendingMachine->putCoinInto(new Penny());
 		Assert::assertEquals(.31, $vendingMachine->depositedAmount());
 	}
 
