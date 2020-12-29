@@ -9,6 +9,7 @@ use VendingMachine\Coin\Dime;
 use VendingMachine\Coin\Nickle;
 use VendingMachine\Coin\Penny;
 use VendingMachine\Coin\Quarter;
+use VendingMachine\NotEnoughMoneyIntoTheMachine;
 use VendingMachine\VendingMachine;
 
 class VendingMachineTest extends TestCase {
@@ -45,4 +46,79 @@ class VendingMachineTest extends TestCase {
 		Assert::assertEquals(.31, $vendingMachine->depositedAmount());
 	}
 
+	/** @test */
+	public function shouldAllowCustomerToBuyACoke(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Quarter());
+
+		$vendingMachineOutput = $vendingMachine->buy('coke');
+
+		Assert::assertEquals('coke', $vendingMachineOutput->product());
+		Assert::assertEmpty($vendingMachineOutput->changes());
+	}
+
+	/** @test */
+	public function shouldAllowCustomerToBuyAPepsi(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Dime());
+
+		$vendingMachineOutput = $vendingMachine->buy('pepsi');
+
+		Assert::assertEquals('pepsi', $vendingMachineOutput->product());
+		Assert::assertEmpty($vendingMachineOutput->changes());
+	}
+
+	/** @test */
+	public function shouldAllowCustomerToBuyASoda(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Nickle());
+
+		$vendingMachineOutput = $vendingMachine->buy('soda');
+
+		Assert::assertEquals('soda', $vendingMachineOutput->product());
+		Assert::assertEmpty($vendingMachineOutput->changes());
+	}
+
+	/** @test */
+	public function shouldNotSellCokeIfThereIsNotEnoughMoney(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Dime());
+
+		$this->expectException(NotEnoughMoneyIntoTheMachine::class);
+		$this->expectExceptionMessage('There is not enough money to buy it');
+		$vendingMachine->buy('coke');
+	}
+
+	/** @test */
+	public function shouldNotSellPepsiIfThereIsNotEnoughMoney(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Nickle());
+		$vendingMachine->putCoinInto(new Penny());
+		$vendingMachine->putCoinInto(new Penny());
+		$vendingMachine->putCoinInto(new Penny());
+		$vendingMachine->putCoinInto(new Penny());
+
+		$this->expectException(NotEnoughMoneyIntoTheMachine::class);
+		$this->expectExceptionMessage('There is not enough money to buy it');
+		$vendingMachine->buy('pepsi');
+	}
+
+	/** @test */
+	public function shouldNotSellSodaIfThereIsNotEnoughMoney(): void {
+		$vendingMachine = new VendingMachine();
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Nickle());
+
+		$this->expectException(NotEnoughMoneyIntoTheMachine::class);
+		$this->expectExceptionMessage('There is not enough money to buy it');
+		$vendingMachine->buy('soda');
+	}
 }
