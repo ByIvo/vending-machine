@@ -11,12 +11,16 @@ use VendingMachine\Product\Coke;
 use VendingMachine\Product\Pepsi;
 use VendingMachine\Product\Product;
 use VendingMachine\Product\Soda;
+use VendingMachine\Stash\Stash;
 
 class VendingMachine {
 
+	/** @var Stash */
+	private $stash;
 	private $depositedCoins;
 
-	public function __construct() {
+	public function __construct(Stash $stash) {
+		$this->stash = $stash;
 		$this->clearDepositedCoins();
 	}
 
@@ -73,32 +77,10 @@ class VendingMachine {
 		$refundAmount = $this->depositedAmount() - $product->priceInCents();
 
 		if ($refundAmount > 0) {
-			return $this->pickCoinsFromStashForAmount($refundAmount);
+			return $this->stash->pickCoinsForAmount($refundAmount);
 		}
 
 		return [];
-	}
-
-	private function pickCoinsFromStashForAmount(float $refundAmount): array {
-		$changes = [];
-		$availableCoins = [
-			new Quarter(),
-			new Dime(),
-			new Nickle(),
-			new Penny(),
-		];
-
-		while ($refundAmount > 0) {
-			/** @var Coin $coin */
-			foreach ($availableCoins as $coin) {
-				if ($coin->inCents() <= $refundAmount) {
-					$changes[] = clone $coin;
-					$refundAmount -= $coin->inCents();
-				}
-			}
-		}
-
-		return $changes;
 	}
 
 	private function clearDepositedCoins(): void {

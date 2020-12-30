@@ -9,10 +9,12 @@ use VendingMachine\Coin\Dime;
 use VendingMachine\Coin\Nickle;
 use VendingMachine\Coin\Penny;
 use VendingMachine\Coin\Quarter;
+use VendingMachine\NoChangeAvailable;
 use VendingMachine\NotEnoughMoneyIntoTheMachine;
 use VendingMachine\Product\Coke;
 use VendingMachine\Product\Pepsi;
 use VendingMachine\Product\Soda;
+use VendingMachine\Stash\SupplierStash;
 use VendingMachine\VendingMachine;
 
 class VendingMachineTest extends TestCase {
@@ -28,7 +30,7 @@ class VendingMachineTest extends TestCase {
 	 * @test @dataProvider provideAcceptableCoins
 	 */
 	public function shouldAcceptCoins(Coin $coin, float $expectedCents): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 
 		$vendingMachine->putCoinInto($coin);
 
@@ -37,7 +39,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldAccumulateDepositedCoins(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 
 		$vendingMachine->putCoinInto(new Nickle());
 		Assert::assertEquals(5, $vendingMachine->depositedAmount());
@@ -51,7 +53,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldAllowCustomerToBuyACoke(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Quarter());
 
 		$vendingMachineOutput = $vendingMachine->buy('coke');
@@ -62,7 +64,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldAllowCustomerToBuyAPepsi(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->putCoinInto(new Dime());
 
@@ -74,7 +76,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldAllowCustomerToBuyASoda(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Dime());
 		$vendingMachine->putCoinInto(new Dime());
 		$vendingMachine->putCoinInto(new Dime());
@@ -89,7 +91,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldNotSellCokeIfThereIsNotEnoughMoney(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Dime());
 		$vendingMachine->putCoinInto(new Dime());
 
@@ -100,7 +102,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldNotSellPepsiIfThereIsNotEnoughMoney(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->putCoinInto(new Nickle());
 		$vendingMachine->putCoinInto(new Penny());
@@ -115,7 +117,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldNotSellSodaIfThereIsNotEnoughMoney(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->putCoinInto(new Dime());
 		$vendingMachine->putCoinInto(new Nickle());
@@ -127,7 +129,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldClearDepositedAmountAfterBuyingSomeProduct(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->buy('coke');
 
@@ -137,7 +139,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldOutputTheProductWithChanges_WhenAmountOverflowTheProductPrice(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->putCoinInto(new Quarter());
 
@@ -155,7 +157,7 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldAllowCustomerToRequestARefundBeforeBuyingAProduct(): void {
-		$vendingMachine = new VendingMachine();
+		$vendingMachine = $this->createInfiniteStashVendingMachine();
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->putCoinInto(new Quarter());
 
@@ -169,5 +171,29 @@ class VendingMachineTest extends TestCase {
 
 		Assert::assertEquals([new Quarter(), new Penny(), new Penny(), new Nickle()], $vendingMachine->giveUpOnBuying());
 		Assert::assertEquals(0, $vendingMachine->depositedAmount());
+	}
+
+	/** @test */
+	public function shouldNotCompleteTheSell_WhenStashHasGivenAllChanges(): void {
+		$stash = new SupplierStash();
+		$stash->supplyCoinForChange(new Dime());
+		$stash->supplyCoinForChange(new Nickle());
+		$vendingMachine = new VendingMachine($stash);
+
+		$stash->supplyCoinForChange(new Nickle());
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->buy('pepsi');
+
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Quarter());
+
+		$this->expectException(NoChangeAvailable::class);
+		$this->expectExceptionMessage('There is no change available for this transaction. Please come back later!');
+		$vendingMachine->buy('pepsi');
+	}
+
+	private function createInfiniteStashVendingMachine(): VendingMachine {
+		return new VendingMachine(new InfiniteStash());
 	}
 }
