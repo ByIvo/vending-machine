@@ -44,5 +44,12 @@ class SupplierStash implements Stash {
 
 	public function supplyCoinForChange(Coin $coin) {
 		$this->availableCoinsForChange[] = $coin;
+
+		usort($this->availableCoinsForChange, 'self::higherCoinValueFirst');
+	}
+
+	public static function higherCoinValueFirst(Coin $coin1, Coin $coin2): int {
+		// higher value comes first
+		return $coin1->inCents() > $coin2->inCents() ? -1 : 1;
 	}
 }
