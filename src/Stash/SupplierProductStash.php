@@ -33,4 +33,11 @@ class SupplierProductStash implements ProductStash {
 		$index = array_shift($productKeys);
 		unset($this->availableProductsForPurchase[$index]);
 	}
+
+	public function clearStash(): array {
+		$clearedStash = $this->availableProductsForPurchase;
+		$this->availableProductsForPurchase = [];
+
+		return $clearedStash;
+	}
 }

@@ -52,4 +52,11 @@ class SupplierCoinStash implements CoinStash {
 		// higher value comes first
 		return $coin1->inCents() > $coin2->inCents() ? -1 : 1;
 	}
+
+	public function clearStash(): array {
+		$clearedStash = $this->availableCoinsForChange;
+		$this->availableCoinsForChange = [];
+
+		return $clearedStash;
+	}
 }

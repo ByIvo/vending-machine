@@ -10,7 +10,7 @@ use VendingMachine\Coin\Penny;
 use VendingMachine\Coin\Quarter;
 use VendingMachine\Stash\SupplierCoinStash;
 
-class SupplierStashTest extends TestCase {
+class SupplierCoinStashTest extends TestCase {
 
 	/** @test */
 	public function shouldPickCoinWhateverTheOrderTheyAreInserted(): void {
@@ -32,6 +32,19 @@ class SupplierStashTest extends TestCase {
 			new Penny(),
 			new Penny(),
 		], $changes);
+	}
+
+	/** @test */
+	public function shouldAllowSupplierToClearTheStash(): void {
+		$supplierCoinStash = new SupplierCoinStash();
+		$supplierCoinStash->supplyCoinForChange(new Quarter());
+		$supplierCoinStash->supplyCoinForChange(new Dime());
+		$supplierCoinStash->supplyCoinForChange(new Nickle());
+		$supplierCoinStash->supplyCoinForChange(new Nickle());
+
+		$coinsFromStash = $supplierCoinStash->clearStash();
+
+		Assert::assertEquals([new Quarter(), new Dime(), new Nickle(), new Nickle()], $coinsFromStash);
 	}
 
 }
