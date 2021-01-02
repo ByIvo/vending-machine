@@ -163,7 +163,7 @@ class VendingMachineTest extends TestCase {
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->putCoinInto(new Quarter());
 
-		Assert::assertEquals([new Quarter(), new Quarter()], $vendingMachine->giveUpOnBuying());
+		Assert::assertEquals([new Quarter(), new Quarter()], $vendingMachine->cancelPurchase());
 		Assert::assertEquals(0, $vendingMachine->depositedAmount());
 
 		$vendingMachine->putCoinInto(new Quarter());
@@ -171,7 +171,7 @@ class VendingMachineTest extends TestCase {
 		$vendingMachine->putCoinInto(new Penny());
 		$vendingMachine->putCoinInto(new Nickle());
 
-		Assert::assertEquals([new Quarter(), new Penny(), new Penny(), new Nickle()], $vendingMachine->giveUpOnBuying());
+		Assert::assertEquals([new Quarter(), new Penny(), new Penny(), new Nickle()], $vendingMachine->cancelPurchase());
 		Assert::assertEquals(0, $vendingMachine->depositedAmount());
 	}
 

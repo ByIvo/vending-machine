@@ -25,7 +25,7 @@ class VendingMachine {
 		$this->depositedCoins[] = $coin;
 	}
 
-	public function giveUpOnBuying(): array {
+	public function cancelPurchase(): array {
 		$depositedCoins = $this->depositedCoins;
 		$this->clearDepositedCoins();
 
