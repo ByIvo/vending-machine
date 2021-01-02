@@ -57,4 +57,8 @@ class InfiniteStash implements CoinStash, ProductStash {
 	public function removeSoldProduct(Product $product): void {
 		//this is a infinite stash... maybe not the right choice for an interface
 	}
+
+	public function supplyCoinForChange(Coin $stash): void {
+		//this is a infinite stash... maybe not the right for for an interface
+	}
 }

@@ -228,6 +228,25 @@ class VendingMachineTest extends TestCase {
 		Assert::assertEquals(new Coke(), $vendingMachineOutput->product());
 	}
 
+	/** @test */
+	public function shouldAddToStashTheDepositedCoin_WhenPurchaseIsCompleted(): void {
+		$productStash = new SupplierProductStash();
+		$productStash->supplyProduct(new Coke());
+		$productStash->supplyProduct(new Pepsi());
+		$vendingMachine = new VendingMachine($emptyCoinStash = new SupplierCoinStash(), $productStash);
+
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Dime());
+		$vendingMachine->putCoinInto(new Nickle());
+		$vendingMachine->buy('coke');
+
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachineOutput = $vendingMachine->buy('pepsi');
+
+		Assert::assertEquals([new Dime(), new Nickle()], $vendingMachineOutput->changes());
+	}
+
 	private function createInfiniteStashVendingMachine(): VendingMachine {
 		return new VendingMachine(new InfiniteStash(), new InfiniteStash());
 	}

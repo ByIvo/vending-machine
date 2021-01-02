@@ -38,6 +38,7 @@ class VendingMachine {
 		}, $sumInit = .0);
 	}
 
+
 	public function buy(string $productCode): VendingMachineOutput {
 		$product = $this->productStash->pickProductFromStash($productCode);
 
@@ -47,7 +48,7 @@ class VendingMachine {
 
 		$changes = $this->pickChangesForProduct($product);
 
-		$this->clearDepositedCoins();
+		$this->supplyDepositedAmountForChanges();
 		$this->productStash->removeSoldProduct($product);
 
 		return new VendingMachineOutput($product, $changes);
@@ -65,6 +66,14 @@ class VendingMachine {
 		}
 
 		return [];
+	}
+
+	private function supplyDepositedAmountForChanges(): void {
+		foreach ($this->depositedCoins as $depositedCoin) {
+			$this->coinStash->supplyCoinForChange($depositedCoin);
+		}
+
+		$this->clearDepositedCoins();
 	}
 
 	private function clearDepositedCoins(): void {

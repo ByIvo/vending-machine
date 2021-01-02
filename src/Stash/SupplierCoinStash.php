@@ -42,7 +42,7 @@ class SupplierCoinStash implements CoinStash {
 		return null;
 	}
 
-	public function supplyCoinForChange(Coin $coin) {
+	public function supplyCoinForChange(Coin $coin): void {
 		$this->availableCoinsForChange[] = $coin;
 
 		usort($this->availableCoinsForChange, 'self::higherCoinValueFirst');
