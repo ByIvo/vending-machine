@@ -8,13 +8,13 @@ use VendingMachine\Coin\Dime;
 use VendingMachine\Coin\Nickle;
 use VendingMachine\Coin\Penny;
 use VendingMachine\Coin\Quarter;
-use VendingMachine\Stash\SupplierStash;
+use VendingMachine\Stash\SupplierCoinStash;
 
 class SupplierStashTest extends TestCase {
 
 	/** @test */
 	public function shouldPickCoinWhateverTheOrderTheyAreInserted(): void {
-		$supplierStash = new SupplierStash();
+		$supplierStash = new SupplierCoinStash();
 
 		$supplierStash->supplyCoinForChange(new Dime());
 		$supplierStash->supplyCoinForChange(new Nickle());

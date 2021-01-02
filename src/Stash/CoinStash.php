@@ -2,7 +2,7 @@
 
 namespace VendingMachine\Stash;
 
-interface Stash {
+interface CoinStash {
 
 	public function pickCoinsForAmount(int $amount): array;
 }

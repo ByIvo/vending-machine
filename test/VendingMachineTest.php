@@ -10,11 +10,13 @@ use VendingMachine\Coin\Nickle;
 use VendingMachine\Coin\Penny;
 use VendingMachine\Coin\Quarter;
 use VendingMachine\NoChangeAvailable;
+use VendingMachine\NoProductAvailable;
 use VendingMachine\NotEnoughMoneyIntoTheMachine;
 use VendingMachine\Product\Coke;
 use VendingMachine\Product\Pepsi;
 use VendingMachine\Product\Soda;
-use VendingMachine\Stash\SupplierStash;
+use VendingMachine\Stash\SupplierCoinStash;
+use VendingMachine\Stash\SupplierProductStash;
 use VendingMachine\VendingMachine;
 
 class VendingMachineTest extends TestCase {
@@ -175,12 +177,12 @@ class VendingMachineTest extends TestCase {
 
 	/** @test */
 	public function shouldNotCompleteTheSell_WhenStashHasGivenAllChanges(): void {
-		$stash = new SupplierStash();
-		$stash->supplyCoinForChange(new Dime());
-		$stash->supplyCoinForChange(new Nickle());
-		$vendingMachine = new VendingMachine($stash);
+		$coinStash = new SupplierCoinStash();
+		$coinStash->supplyCoinForChange(new Dime());
+		$coinStash->supplyCoinForChange(new Nickle());
+		$vendingMachine = new VendingMachine($coinStash, $productStash = new InfiniteStash());
 
-		$stash->supplyCoinForChange(new Nickle());
+		$coinStash->supplyCoinForChange(new Nickle());
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->putCoinInto(new Quarter());
 		$vendingMachine->buy('pepsi');
@@ -193,7 +195,23 @@ class VendingMachineTest extends TestCase {
 		$vendingMachine->buy('pepsi');
 	}
 
+	/** @test */
+	public function shouldNotCompleteTheSell_WhenStashHasNotEnoughProducts(): void {
+		$productStash = new SupplierProductStash();
+		$productStash->supplyProduct(new Coke());
+		$productStash->supplyProduct(new Pepsi());
+		$vendingMachine = new VendingMachine(new SupplierCoinStash(), $productStash);
+
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachine->buy('coke');
+
+		$vendingMachine->putCoinInto(new Quarter());
+		$this->expectException(NoProductAvailable::class);
+		$this->expectExceptionMessage('There is no coke available for purchase. Please come back later!');
+		$vendingMachine->buy('coke');
+	}
+
 	private function createInfiniteStashVendingMachine(): VendingMachine {
-		return new VendingMachine(new InfiniteStash());
+		return new VendingMachine(new InfiniteStash(), new InfiniteStash());
 	}
 }

@@ -7,9 +7,14 @@ use VendingMachine\Coin\Dime;
 use VendingMachine\Coin\Nickle;
 use VendingMachine\Coin\Penny;
 use VendingMachine\Coin\Quarter;
-use VendingMachine\Stash\Stash;
+use VendingMachine\Product\Coke;
+use VendingMachine\Product\Pepsi;
+use VendingMachine\Product\Product;
+use VendingMachine\Product\Soda;
+use VendingMachine\Stash\CoinStash;
+use VendingMachine\Stash\ProductStash;
 
-class InfiniteStash implements Stash {
+class InfiniteStash implements CoinStash, ProductStash {
 
 	public function pickCoinsForAmount(int $amount): array {
 		$changes = [];
@@ -31,5 +36,21 @@ class InfiniteStash implements Stash {
 		}
 
 		return $changes;
+	}
+
+	public function removeProductFromStash(string $productCode): Product {
+		$foundProducts = array_filter($this->availableProducts(), function (Product $product) use ($productCode) {
+			return $product->code() === $productCode;
+		});
+
+		return array_shift($foundProducts);
+	}
+
+	private function availableProducts(): array {
+		return [
+			new Coke(),
+			new Pepsi(),
+			new Soda(),
+		];
 	}
 }

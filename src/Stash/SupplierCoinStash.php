@@ -5,7 +5,7 @@ namespace VendingMachine\Stash;
 use VendingMachine\Coin\Coin;
 use VendingMachine\NoChangeAvailable;
 
-class SupplierStash implements Stash {
+class SupplierCoinStash implements CoinStash {
 
 	private $availableCoinsForChange;
 

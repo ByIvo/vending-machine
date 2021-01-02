@@ -3,24 +3,21 @@
 namespace VendingMachine;
 
 use VendingMachine\Coin\Coin;
-use VendingMachine\Coin\Dime;
-use VendingMachine\Coin\Nickle;
-use VendingMachine\Coin\Penny;
-use VendingMachine\Coin\Quarter;
-use VendingMachine\Product\Coke;
-use VendingMachine\Product\Pepsi;
 use VendingMachine\Product\Product;
-use VendingMachine\Product\Soda;
-use VendingMachine\Stash\Stash;
+use VendingMachine\Stash\CoinStash;
+use VendingMachine\Stash\ProductStash;
 
 class VendingMachine {
 
-	/** @var Stash */
-	private $stash;
+	/** @var CoinStash */
+	private $coinStash;
+	/** @var ProductStash */
+	private $productStash;
 	private $depositedCoins;
 
-	public function __construct(Stash $stash) {
-		$this->stash = $stash;
+	public function __construct(CoinStash $coinStash, ProductStash $productStash) {
+		$this->coinStash = $coinStash;
+		$this->productStash = $productStash;
 		$this->clearDepositedCoins();
 	}
 
@@ -42,7 +39,7 @@ class VendingMachine {
 	}
 
 	public function buy(string $productCode): VendingMachineOutput {
-		$product = $this->getProductFromStashByCode($productCode);
+		$product = $this->productStash->removeProductFromStash($productCode);
 
 		if (!$this->hasEnoughMoneyToBuyProduct($product)) {
 			throw new NotEnoughMoneyIntoTheMachine();
@@ -53,22 +50,6 @@ class VendingMachine {
 		return new VendingMachineOutput($product, $changes);
 	}
 
-	private function getProductFromStashByCode(string $productCode): Product {
-		$foundProducts = array_filter($this->availableProducts(), function (Product $product) use ($productCode) {
-			return $product->code() === $productCode;
-		});
-
-		return array_shift($foundProducts);
-	}
-
-	private function availableProducts(): array {
-		return [
-			new Coke(),
-			new Pepsi(),
-			new Soda(),
-		];
-	}
-
 	private function hasEnoughMoneyToBuyProduct(Product $product): bool {
 		return $this->depositedAmount() >= $product->priceInCents();
 	}
@@ -77,7 +58,7 @@ class VendingMachine {
 		$refundAmount = $this->depositedAmount() - $product->priceInCents();
 
 		if ($refundAmount > 0) {
-			return $this->stash->pickCoinsForAmount($refundAmount);
+			return $this->coinStash->pickCoinsForAmount($refundAmount);
 		}
 
 		return [];
