@@ -14,10 +14,9 @@ class SupplierProductStash implements ProductStash {
 		$this->availableProductsForPurchase = [];
 	}
 
-	public function removeProductFromStash(string $productCode): Product {
-		foreach ($this->availableProductsForPurchase as $index => $availableProduct) {
+	public function pickProductFromStash(string $productCode): Product {
+		foreach ($this->availableProductsForPurchase as $availableProduct) {
 			if ($availableProduct->code() === $productCode) {
-				unset($this->availableProductsForPurchase[$index]);
 				return $availableProduct;
 			}
 		}
@@ -27,5 +26,11 @@ class SupplierProductStash implements ProductStash {
 
 	public function supplyProduct(Product $product) {
 		$this->availableProductsForPurchase[] = $product;
+	}
+
+	public function removeSoldProduct(Product $product): void {
+		$productKeys = array_keys($this->availableProductsForPurchase, $product, $strict = true);
+		$index = array_shift($productKeys);
+		unset($this->availableProductsForPurchase[$index]);
 	}
 }

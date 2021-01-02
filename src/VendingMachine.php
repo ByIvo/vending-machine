@@ -39,14 +39,17 @@ class VendingMachine {
 	}
 
 	public function buy(string $productCode): VendingMachineOutput {
-		$product = $this->productStash->removeProductFromStash($productCode);
+		$product = $this->productStash->pickProductFromStash($productCode);
 
 		if (!$this->hasEnoughMoneyToBuyProduct($product)) {
 			throw new NotEnoughMoneyIntoTheMachine();
 		}
 
 		$changes = $this->pickChangesForProduct($product);
+
 		$this->clearDepositedCoins();
+		$this->productStash->removeSoldProduct($product);
+
 		return new VendingMachineOutput($product, $changes);
 	}
 

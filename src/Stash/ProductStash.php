@@ -6,5 +6,6 @@ use VendingMachine\Product\Product;
 
 interface ProductStash {
 
-	public function removeProductFromStash(string $productCode): Product;
+	public function pickProductFromStash(string $productCode): Product;
+	public function removeSoldProduct(Product $product): void;
 }

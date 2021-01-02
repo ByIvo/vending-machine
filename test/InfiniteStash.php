@@ -38,7 +38,7 @@ class InfiniteStash implements CoinStash, ProductStash {
 		return $changes;
 	}
 
-	public function removeProductFromStash(string $productCode): Product {
+	public function pickProductFromStash(string $productCode): Product {
 		$foundProducts = array_filter($this->availableProducts(), function (Product $product) use ($productCode) {
 			return $product->code() === $productCode;
 		});
@@ -52,5 +52,9 @@ class InfiniteStash implements CoinStash, ProductStash {
 			new Pepsi(),
 			new Soda(),
 		];
+	}
+
+	public function removeSoldProduct(Product $product): void {
+		//this is a infinite stash... maybe not the right choice for an interface
 	}
 }

@@ -211,6 +211,23 @@ class VendingMachineTest extends TestCase {
 		$vendingMachine->buy('coke');
 	}
 
+	/** @test */
+	public function shouldOnlyRemoveTheProductFromStash_IfEverythingGoesWellWithTheTransaction(): void {
+		$productStash = new SupplierProductStash();
+		$productStash->supplyProduct(new Coke());
+		$vendingMachine = new VendingMachine(new SupplierCoinStash(), $productStash);
+
+		try {
+			$vendingMachine->buy('coke');
+			self::fail('Should not complete the purchase');
+		} catch (NotEnoughMoneyIntoTheMachine $e) {}
+
+		$vendingMachine->putCoinInto(new Quarter());
+		$vendingMachineOutput = $vendingMachine->buy('coke');
+
+		Assert::assertEquals(new Coke(), $vendingMachineOutput->product());
+	}
+
 	private function createInfiniteStashVendingMachine(): VendingMachine {
 		return new VendingMachine(new InfiniteStash(), new InfiniteStash());
 	}
